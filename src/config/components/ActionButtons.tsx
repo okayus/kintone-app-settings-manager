@@ -11,7 +11,6 @@ interface ActionButtonsProps {
   onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onExport: () => void;
   onSubmit: () => void;
-  onAddTab: () => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
@@ -19,18 +18,8 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
   onImport,
   onExport,
   onSubmit,
-  onAddTab,
 }) => (
   <>
-    {/* Empty state */}
-    {formData.settings.length === 0 && (
-      <Box sx={{ p: 3, textAlign: "center" }}>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={onAddTab}>
-          設定を追加
-        </Button>
-      </Box>
-    )}
-
     {/* Action buttons */}
     <Box mt={3} display="flex" justifyContent="space-between">
       <Box display="flex" gap={2}>
@@ -50,12 +39,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
           エクスポート
         </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={onSubmit}
-        disabled={formData.settings.length === 0}
-      >
+      <Button variant="contained" color="primary" onClick={onSubmit}>
         保存
       </Button>
     </Box>

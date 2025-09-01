@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 
 import { KintoneSdk } from "../shared/util/kintoneSdk";
 import { KintoneUtil } from "../shared/util/KintoneUtil";
@@ -9,8 +8,6 @@ import { KintoneUtil } from "../shared/util/KintoneUtil";
 // Components
 import { ActionButtons } from "./components/ActionButtons";
 import { CommonSettingForm } from "./components/CommonSettingForm";
-import { SettingForm } from "./components/SettingForm";
-import { TabHeader } from "./components/TabHeader";
 // Hooks
 import { useConfigData } from "./hooks/useConfigData";
 import { useConfigPersistence } from "./hooks/useConfigPersistence";
@@ -22,8 +19,6 @@ import { ValidationService } from "./services/ValidationService";
 import {
   createCommonSettingSchema,
   createCommonSettingUiSchema,
-  createSettingSchema,
-  createSettingUiSchema,
 } from "./utils/schemaUtils";
 
 interface AppProps {
@@ -44,7 +39,7 @@ const ConfigForm: React.FC<AppProps> = ({ pluginId, kintoneUtil }) => {
 
   // State management
   const { state, actions } = useConfigData();
-  const { formData, currentTab } = state;
+  const { formData } = state;
 
   // Persistence operations
   const { handleSubmit, handleImport, handleExport } = useConfigPersistence({
@@ -53,8 +48,6 @@ const ConfigForm: React.FC<AppProps> = ({ pluginId, kintoneUtil }) => {
   });
 
   // Schema generation
-  const schema = useMemo(() => createSettingSchema(), []);
-  const uiSchema = useMemo(() => createSettingUiSchema(), []);
   const commonSchema = useMemo(() => createCommonSettingSchema(), []);
   const commonUiSchema = useMemo(() => createCommonSettingUiSchema(), []);
 
@@ -74,31 +67,11 @@ const ConfigForm: React.FC<AppProps> = ({ pluginId, kintoneUtil }) => {
         onUpdateCommonSetting={actions.handleUpdateCommonSetting}
       />
 
-      {/* 個別設定タブセクション */}
-      <Paper sx={{ mt: 2 }}>
-        <TabHeader
-          formData={formData}
-          currentTab={currentTab}
-          onTabChange={actions.handleTabChange}
-          onAddTab={actions.handleAddTab}
-          onDeleteTab={actions.handleDeleteTab}
-        />
-
-        <SettingForm
-          formData={formData}
-          currentTab={currentTab}
-          schema={schema}
-          uiSchema={uiSchema}
-          onUpdateSetting={actions.handleUpdateSetting}
-        />
-      </Paper>
-
       <ActionButtons
         formData={formData}
         onImport={onImport}
         onExport={onExport}
         onSubmit={onSubmit}
-        onAddTab={actions.handleAddTab}
       />
     </Box>
   );

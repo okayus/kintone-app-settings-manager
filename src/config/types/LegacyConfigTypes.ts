@@ -1,4 +1,3 @@
-import type { ConfigSetting } from "./ConfigFormTypes";
 import type { ConfigSchema } from "../../shared/types/Config";
 
 /**
@@ -17,7 +16,6 @@ interface CommonSetting {
  */
 interface LegacyConfigV1 {
   config: {
-    settings: ConfigSetting[];
     commonSetting?: CommonSetting;
   };
 }
@@ -27,7 +25,6 @@ interface LegacyConfigV1 {
  * 直接 settings プロパティを含む形式
  */
 interface LegacyConfigV2 {
-  settings: ConfigSetting[];
   commonSetting?: CommonSetting;
 }
 

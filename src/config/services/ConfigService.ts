@@ -21,10 +21,10 @@ export class ConfigService implements IConfigService {
         const parsedConfig = JSON.parse(responseConfig.config) as unknown;
         return convertLegacyConfig(parsedConfig);
       }
-      return { settings: [] };
+      return {};
     } catch (error) {
       console.error("Failed to load config:", error);
-      return { settings: [] };
+      return {};
     }
   }
 

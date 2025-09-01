@@ -1,5 +1,3 @@
-import type { ConfigFormActions } from "./ConfigFormTypes";
-import type { ConfigSchema } from "../../shared/types/Config";
 import type { WidgetProps } from "@rjsf/utils";
 
 /**
@@ -34,16 +32,6 @@ export interface KintoneView {
 export interface CustomWidgetBaseProps extends WidgetProps {
   value: string;
   onChange: (value: string) => void;
-  formContext?: CustomFormContext;
-}
-
-/**
- * フォームコンテキストの型定義
- */
-export interface CustomFormContext extends ConfigFormActions {
-  formData: ConfigSchema;
-  currentIndex?: number;
-  currentSetting?: ConfigSchema["settings"][number];
 }
 
 /**
