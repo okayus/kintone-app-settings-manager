@@ -27,11 +27,11 @@
     ]
   },
   "name": {
-    "en": "kintone-plugin-template",
-    "ja": "kintone-plugin-template"
+    "en": "kintone-app-settings-manager",
+    "ja": "kintone-app-settings-manager"
   },
   "description": {
-    "en": "kintone-plugin-template",
-    "ja": "kintone-plugin-template"
+    "en": "kintone-app-settings-manager",
+    "ja": "kintone-app-settings-manager"
   }
 }
