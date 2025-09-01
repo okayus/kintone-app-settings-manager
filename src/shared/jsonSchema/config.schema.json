@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "properties": {
+    "commonSetting": {
+      "type": "object",
+      "title": "共通設定",
+      "properties": {
+        "prefix": {
+          "type": "string",
+          "title": "通知メッセージのプレフィックス"
+        },
+        "targetView": {
+          "type": "string",
+          "title": "実行ボタンを表示するビュー"
+        }
+      },
+      "additionalProperties": false
+    },
+    "settings": {
+      "type": "array",
+      "title": "通知設定",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "設定名"
+          },
+          "appId": {
+            "type": "string",
+            "title": "対象アプリ"
+          },
+          "targetField": {
+            "type": "string",
+            "title": "対象フィールド"
+          },
+          "timestampField": {
+            "type": "string",
+            "title": "タイムスタンプフィールド"
+          },
+          "prefix": {
+            "type": "string",
+            "title": "通知メッセージのプレフィックス"
+          },
+          "body": {
+            "type": "string",
+            "title": "通知メッセージのボディ"
+          }
+        },
+        "required": ["name", "appId", "targetField", "timestampField", "prefix", "body"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["settings"],
+  "additionalProperties": false
+}

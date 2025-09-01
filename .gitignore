@@ -1,0 +1,7 @@
+node_modules
+private.ppk
+jsdoc
+plugin/*.zip
+plugin/js
+.env
+mise.toml
