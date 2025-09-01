@@ -5,13 +5,13 @@
       "type": "object",
       "title": "共通設定",
       "properties": {
-        "prefix": {
+        "appId": {
           "type": "string",
-          "title": "通知メッセージのプレフィックス"
+          "title": "アプリID"
         },
-        "targetView": {
+        "getProcessManagementResponse": {
           "type": "string",
-          "title": "実行ボタンを表示するビュー"
+          "title": "プロセス管理のレスポンスを保存する"
         }
       },
       "additionalProperties": false

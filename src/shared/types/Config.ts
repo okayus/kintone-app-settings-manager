@@ -5,13 +5,13 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type ID = string;
 export type NoName1 = string;
-export type NoName2 = string;
 
 export interface ConfigSchema {
   commonSetting?: NoName;
 }
 export interface NoName {
-  prefix?: NoName1;
-  targetView?: NoName2;
+  appId?: ID;
+  getProcessManagementResponse?: NoName1;
 }
