@@ -9,13 +9,19 @@
           "type": "string",
           "title": "アプリID"
         },
+        "name": {
+          "type": "string",
+          "title": "アプリ名を保存する"
+        },
         "getProcessManagementResponse": {
           "type": "string",
           "title": "プロセス管理のレスポンスを保存する"
         }
       },
+      "required": ["appId", "name"],
       "additionalProperties": false
     }
   },
+  "required": ["commonSetting"],
   "additionalProperties": false
 }

@@ -7,11 +7,13 @@
 
 export type ID = string;
 export type NoName1 = string;
+export type NoName2 = string;
 
 export interface ConfigSchema {
-  commonSetting?: NoName;
+  commonSetting: NoName;
 }
 export interface NoName {
-  appId?: ID;
-  getProcessManagementResponse?: NoName1;
+  appId: ID;
+  name: NoName1;
+  getProcessManagementResponse?: NoName2;
 }
