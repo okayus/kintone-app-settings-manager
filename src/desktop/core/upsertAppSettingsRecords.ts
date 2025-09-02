@@ -43,6 +43,7 @@ export const upsertAppSettingsRecords = async (
 export const makeRecordsForParameterOfApps = (
   apps: Awaited<ReturnType<KintoneRestAPIClient["app"]["getApps"]>>["apps"],
   config: ConfigSchema,
+  // getProcessManagementのレスポンスの配列と、その配列の各要素がappIdsに紐づいたオブジェクトの配列を追加する
 ): Parameters<
   KintoneRestAPIClient["record"]["updateAllRecords"]
 >[0]["records"] => {
@@ -54,5 +55,32 @@ export const makeRecordsForParameterOfApps = (
     record: {
       [config.commonSetting.name]: { value: app.name },
     },
+  }));
+};
+
+/**
+ * @description アプリIDの配列から、getProcessManagementのレスポンスの配列を取得し、IDとレスポンスを紐づけたオブジェクトの配列を返す純粋関数
+ */
+export const fetchProcessManagementResponses = async (
+  kintoneRestAPIClients: KintoneRestAPIClient,
+  appIds: number[],
+): Promise<
+  Array<{
+    appId: number;
+    response: Awaited<
+      ReturnType<KintoneRestAPIClient["app"]["getProcessManagement"]>
+    > | null;
+  }>
+> => {
+  const responses = await Promise.all(
+    appIds.map((appId) =>
+      kintoneRestAPIClients.app
+        .getProcessManagement({ app: appId })
+        .catch(() => null),
+    ),
+  );
+  return appIds.map((appId, index) => ({
+    appId,
+    response: responses[index],
   }));
 };
