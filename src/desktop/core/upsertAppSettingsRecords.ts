@@ -19,10 +19,6 @@ export const upsertAppSettingsRecords = async (
   config: ConfigSchema,
 ) => {
   try {
-    console.log("Fetching app settings...");
-    console.log("event:", event);
-    console.log("config:", config);
-
     const apps = (await kintoneRestAPIClients.app.getApps({})).apps;
     const appIds = apps.map((app) => app.appId);
 
@@ -34,18 +30,12 @@ export const upsertAppSettingsRecords = async (
         kintoneRestAPIClients,
         appIds,
       );
-      console.log(
-        "Process management responses fetched:",
-        responses.processManagement,
-      );
     }
 
     // 将来的に追加される他のレスポンス取得処理
     // if (config.commonSetting.getFormFieldsResponse) {
     //   responses.formFields = await fetchFormFields(kintoneRestAPIClients, appIds);
     // }
-
-    console.log("Apps fetched:", apps);
 
     await kintoneRestAPIClients.record.updateAllRecords({
       app: event.appId,
