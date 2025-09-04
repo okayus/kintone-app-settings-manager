@@ -5,53 +5,23 @@
       "type": "object",
       "title": "共通設定",
       "properties": {
-        "prefix": {
+        "appId": {
           "type": "string",
-          "title": "通知メッセージのプレフィックス"
+          "title": "アプリID"
         },
-        "targetView": {
+        "name": {
           "type": "string",
-          "title": "実行ボタンを表示するビュー"
+          "title": "アプリ名を保存する"
+        },
+        "getProcessManagementResponse": {
+          "type": "string",
+          "title": "プロセス管理のレスポンスを保存する"
         }
       },
+      "required": ["appId", "name"],
       "additionalProperties": false
-    },
-    "settings": {
-      "type": "array",
-      "title": "通知設定",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "設定名"
-          },
-          "appId": {
-            "type": "string",
-            "title": "対象アプリ"
-          },
-          "targetField": {
-            "type": "string",
-            "title": "対象フィールド"
-          },
-          "timestampField": {
-            "type": "string",
-            "title": "タイムスタンプフィールド"
-          },
-          "prefix": {
-            "type": "string",
-            "title": "通知メッセージのプレフィックス"
-          },
-          "body": {
-            "type": "string",
-            "title": "通知メッセージのボディ"
-          }
-        },
-        "required": ["name", "appId", "targetField", "timestampField", "prefix", "body"],
-        "additionalProperties": false
-      }
     }
   },
-  "required": ["settings"],
+  "required": ["commonSetting"],
   "additionalProperties": false
 }
