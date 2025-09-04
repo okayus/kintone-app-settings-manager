@@ -1,7 +1,7 @@
 import { KintoneRestAPIClient } from "@kintone/rest-api-client";
 
 import { renderExecutionButton } from "./components/desktopUIHelpers";
-import { upsertAppSettingsRecords } from "./core/upsertAppSettingsRecords";
+import { syncAppSettingsToKintone } from "./core/syncAppSettingsToKintone";
 
 import type { ConfigSchema } from "src/shared/types/Config";
 import type { KintoneEvent } from "src/shared/types/KintoneTypes";
@@ -16,7 +16,7 @@ import type { KintoneEvent } from "src/shared/types/KintoneTypes";
 
     renderExecutionButton(
       "alert-button",
-      () => upsertAppSettingsRecords(restApiClient, event, config),
+      () => syncAppSettingsToKintone(restApiClient, event, config),
       "アプリ設定を取得",
     );
   });

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import {
   buildUpdateRecords,
   fetchAppProcessSettings,
-} from "./upsertAppSettingsRecords";
+} from "./syncAppSettingsToKintone";
 
 import type { ConfigSchema } from "../../shared/types/Config";
 import type { KintoneRestAPIClient } from "@kintone/rest-api-client";
