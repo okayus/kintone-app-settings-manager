@@ -1,14 +1,12 @@
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 
 import {
-  fetchProcessManagementResponses,
-  makeRecordsForParameterOfApps,
+  buildUpdateRecords,
+  fetchAppProcessSettings,
 } from "./upsertAppSettingsRecords";
 
 import type { ConfigSchema } from "../../shared/types/Config";
 import type { KintoneRestAPIClient } from "@kintone/rest-api-client";
-import type { Record as KintoneRecord } from "@kintone/rest-api-client/lib/src/client/types";
-import type { KintoneEvent } from "src/shared/types/KintoneTypes";
 
 vi.mock("../shared/util/kintoneSdk");
 
@@ -24,17 +22,6 @@ const mockKintone = {
     },
   },
 };
-
-// 型安全なテストレコード作成
-function createTestRecord(
-  fields: Record<string, { type: string; value: string }>,
-): KintoneRecord {
-  const record: Record<string, any> = {};
-  for (const [key, value] of Object.entries(fields)) {
-    record[key] = value;
-  }
-  return record;
-}
 
 describe("MessageService", () => {
   let mockRestApiClient: {
@@ -61,7 +48,7 @@ describe("MessageService", () => {
     };
   });
 
-  describe("fetchProcessManagementResponses", () => {
+  describe("fetchAppProcessSettings", () => {
     it("アプリIDの配列から、getProcessManagementのレスポンスの配列を取得し、IDとレスポンスを紐づけたオブジェクトの配列を返す", async () => {
       // KintoneRestAPIClientのモックを作成
       const mockKintoneClient = {
@@ -84,10 +71,7 @@ describe("MessageService", () => {
 
       // テスト実行
       const appIds = ["1", "2"];
-      const result = await fetchProcessManagementResponses(
-        mockKintoneClient,
-        appIds,
-      );
+      const result = await fetchAppProcessSettings(mockKintoneClient, appIds);
 
       // 検証
       expect(result).toEqual([
@@ -107,7 +91,7 @@ describe("MessageService", () => {
     });
   });
 
-  describe("makeRecordsForParameterOfApps", () => {
+  describe("buildUpdateRecords", () => {
     it("kintoneRestAPIClients.app.getAppsとfetchProcessManagementResponsesの結果を基に、updateAllRecords用のレコード配列を生成する", () => {
       // テストデータ作成
       const mockConfig = {
@@ -166,11 +150,7 @@ describe("MessageService", () => {
       };
 
       // 関数実行
-      const result = makeRecordsForParameterOfApps(
-        mockApps,
-        mockResponses,
-        mockConfig,
-      );
+      const result = buildUpdateRecords(mockApps, mockResponses, mockConfig);
 
       // 期待値
       const expectObj: Parameters<

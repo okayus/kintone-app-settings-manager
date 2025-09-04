@@ -6,28 +6,26 @@ import type { KintoneEvent } from "src/shared/types/KintoneTypes";
 /**
  * @description kintone APIから取得した各レスポンスを管理するインターフェース
  */
-interface KintoneResponseCollection {
-  processManagement?: Awaited<
-    ReturnType<typeof fetchProcessManagementResponses>
-  >;
+interface AppSettingsApiResponses {
+  processManagement?: Awaited<ReturnType<typeof fetchAppProcessSettings>>;
   // 将来追加予定: formFields, views, customize, etc.
 }
 
-export const upsertAppSettingsRecords = async (
-  kintoneRestAPIClients: KintoneRestAPIClient,
+export const syncAppSettingsToKintone = async (
+  kintoneClient: KintoneRestAPIClient,
   event: KintoneEvent,
   config: ConfigSchema,
 ) => {
   try {
-    const apps = (await kintoneRestAPIClients.app.getApps({})).apps;
+    const apps = (await kintoneClient.app.getApps({})).apps;
     const appIds = apps.map((app) => app.appId);
 
     // 各種レスポンスを並行して取得（設定に基づいて条件分岐）
-    const responses: KintoneResponseCollection = {};
+    const apiResponses: AppSettingsApiResponses = {};
 
     if (config.commonSetting.getProcessManagementResponse) {
-      responses.processManagement = await fetchProcessManagementResponses(
-        kintoneRestAPIClients,
+      apiResponses.processManagement = await fetchAppProcessSettings(
+        kintoneClient,
         appIds,
       );
     }
@@ -37,10 +35,10 @@ export const upsertAppSettingsRecords = async (
     //   responses.formFields = await fetchFormFields(kintoneRestAPIClients, appIds);
     // }
 
-    await kintoneRestAPIClients.record.updateAllRecords({
+    await kintoneClient.record.updateAllRecords({
       app: event.appId,
       upsert: true,
-      records: makeRecordsForParameterOfApps(apps, responses, config),
+      records: buildUpdateRecords(apps, apiResponses, config),
     });
   } catch (error) {
     console.error("Error fetching app settings:", error);
@@ -51,25 +49,25 @@ export const upsertAppSettingsRecords = async (
 /**
  * @description アプリと各種レスポンスからレコードフィールドを動的に生成するヘルパー関数
  */
-const buildRecordFields = (
+const createFieldData = (
   app: Awaited<ReturnType<KintoneRestAPIClient["app"]["getApps"]>>["apps"][0],
-  responses: KintoneResponseCollection,
+  apiResponses: AppSettingsApiResponses,
   config: ConfigSchema,
 ): Record<string, { value: string }> => {
-  const fields: Record<string, { value: string }> = {
+  const recordFields: Record<string, { value: string }> = {
     [config.commonSetting.name]: { value: app.name },
   };
 
   // プロセス管理レスポンスの処理
   if (
-    responses.processManagement &&
+    apiResponses.processManagement &&
     config.commonSetting.getProcessManagementResponse
   ) {
-    const processManagementData = responses.processManagement.find(
+    const processSettings = apiResponses.processManagement.find(
       (pm) => pm.appId === app.appId,
     );
-    fields[config.commonSetting.getProcessManagementResponse] = {
-      value: JSON.stringify(processManagementData?.response || null),
+    recordFields[config.commonSetting.getProcessManagementResponse] = {
+      value: JSON.stringify(processSettings?.response || null),
     };
   }
 
@@ -77,15 +75,15 @@ const buildRecordFields = (
   // if (responses.formFields && config.commonSetting.getFormFieldsResponse) { ... }
   // if (responses.views && config.commonSetting.getViewsResponse) { ... }
 
-  return fields;
+  return recordFields;
 };
 
 /**
  * @description 複数のアプリ情報をupdateAllRecords用のパラメータに変換する純粋関数
  */
-export const makeRecordsForParameterOfApps = (
+export const buildUpdateRecords = (
   apps: Awaited<ReturnType<KintoneRestAPIClient["app"]["getApps"]>>["apps"],
-  responses: KintoneResponseCollection,
+  apiResponses: AppSettingsApiResponses,
   config: ConfigSchema,
 ): Parameters<
   KintoneRestAPIClient["record"]["updateAllRecords"]
@@ -95,15 +93,15 @@ export const makeRecordsForParameterOfApps = (
       field: config.commonSetting.appId,
       value: app.appId,
     },
-    record: buildRecordFields(app, responses, config),
+    record: createFieldData(app, apiResponses, config),
   }));
 };
 
 /**
  * @description アプリIDの配列から、getProcessManagementのレスポンスの配列を取得し、IDとレスポンスを紐づけたオブジェクトの配列を返す純粋関数
  */
-export const fetchProcessManagementResponses = async (
-  kintoneRestAPIClients: KintoneRestAPIClient,
+export const fetchAppProcessSettings = async (
+  kintoneClient: KintoneRestAPIClient,
   appIds: string[],
 ): Promise<
   Array<{
@@ -115,9 +113,7 @@ export const fetchProcessManagementResponses = async (
 > => {
   const responses = await Promise.all(
     appIds.map((appId) =>
-      kintoneRestAPIClients.app
-        .getProcessManagement({ app: appId })
-        .catch(() => null),
+      kintoneClient.app.getProcessManagement({ app: appId }).catch(() => null),
     ),
   );
   return appIds.map((appId, index) => ({
