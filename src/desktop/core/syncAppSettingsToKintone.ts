@@ -11,6 +11,15 @@ interface AppSettingsApiResponses {
   // 将来追加予定: formFields, views, customize, etc.
 }
 
+/**
+ * @description フィールドデータ生成関数の型定義
+ */
+type FieldDataCreator = (
+  app: Awaited<ReturnType<KintoneRestAPIClient["app"]["getApps"]>>["apps"][0],
+  apiResponses: AppSettingsApiResponses,
+  config: ConfigSchema,
+) => Record<string, { value: string }>;
+
 export const syncAppSettingsToKintone = async (
   kintoneClient: KintoneRestAPIClient,
   event: KintoneEvent,
@@ -79,23 +88,30 @@ const createFieldData = (
 };
 
 /**
- * @description 複数のアプリ情報をupdateAllRecords用のパラメータに変換する純粋関数
+ * @description レコード生成の高階関数
+ * フィールドデータ作成関数を注入可能にすることで、テスト容易性と拡張性を向上
  */
-export const buildUpdateRecords = (
-  apps: Awaited<ReturnType<KintoneRestAPIClient["app"]["getApps"]>>["apps"],
-  apiResponses: AppSettingsApiResponses,
-  config: ConfigSchema,
-): Parameters<
-  KintoneRestAPIClient["record"]["updateAllRecords"]
->[0]["records"] => {
-  return apps.map((app) => ({
-    updateKey: {
-      field: config.commonSetting.appId,
-      value: app.appId,
-    },
-    record: createFieldData(app, apiResponses, config),
-  }));
-};
+const createRecordBuilder =
+  (fieldCreator: FieldDataCreator = createFieldData) =>
+  (
+    apps: Awaited<ReturnType<KintoneRestAPIClient["app"]["getApps"]>>["apps"],
+    apiResponses: AppSettingsApiResponses,
+    config: ConfigSchema,
+  ): Parameters<
+    KintoneRestAPIClient["record"]["updateAllRecords"]
+  >[0]["records"] =>
+    apps.map((app) => ({
+      updateKey: {
+        field: config.commonSetting.appId,
+        value: app.appId,
+      },
+      record: fieldCreator(app, apiResponses, config),
+    }));
+
+/**
+ * @description デフォルトのレコード構築関数
+ */
+export const buildUpdateRecords = createRecordBuilder();
 
 /**
  * @description アプリIDの配列から、getProcessManagementのレスポンスの配列を取得し、IDとレスポンスを紐づけたオブジェクトの配列を返す純粋関数
