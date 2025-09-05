@@ -17,16 +17,40 @@ export const renderExecutionButton = (
     return;
   }
 
+  renderButtonToContainer(elementId, onClick, buttonLabel, headerSpaceElement);
+};
+
+/**
+ * @description レコード詳細画面にボタンを表示するReactコンポーネントをレンダリングします。
+ */
+export const renderRecordDetailButton = (
+  elementId: string,
+  onClick: () => Promise<void>,
+  buttonLabel: string,
+  container: HTMLElement,
+) => {
+  renderButtonToContainer(elementId, onClick, buttonLabel, container);
+};
+
+/**
+ * @description 指定されたコンテナにボタンを表示する共通関数
+ */
+const renderButtonToContainer = (
+  elementId: string,
+  onClick: () => Promise<void>,
+  buttonLabel: string,
+  container: HTMLElement,
+) => {
   const existingButtonRoot = document.getElementById(elementId);
-  if (existingButtonRoot && headerSpaceElement.contains(existingButtonRoot)) {
-    headerSpaceElement.removeChild(existingButtonRoot);
+  if (existingButtonRoot && container.contains(existingButtonRoot)) {
+    container.removeChild(existingButtonRoot);
   }
 
   const buttonRoot = document.createElement("div");
   buttonRoot.id = elementId;
   buttonRoot.style.display = "inline-block";
   buttonRoot.style.marginLeft = "10px";
-  headerSpaceElement.appendChild(buttonRoot);
+  container.appendChild(buttonRoot);
 
   const handleClick = async () => {
     try {
