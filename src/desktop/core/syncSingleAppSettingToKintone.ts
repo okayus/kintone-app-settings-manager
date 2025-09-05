@@ -1,6 +1,9 @@
 import { KintoneRestAPIClient } from "@kintone/rest-api-client";
 
-import { fetchAppProcessSettings } from "./syncAppSettingsToKintone";
+import {
+  fetchAppFormFields,
+  fetchAppProcessSettings,
+} from "./syncAppSettingsToKintone";
 
 import type { AppSettingsApiResponses } from "./syncAppSettingsToKintone";
 import type { ConfigSchema } from "../../shared/types/Config";
@@ -19,8 +22,9 @@ export const syncSingleAppSettingToKintone = async (
       throw new Error("Target app ID not found in record");
     }
 
-    // プロセス管理設定を取得
+    // アプリ設定を取得
     const apiResponses: AppSettingsApiResponses = {};
+
     if (config.commonSetting.getProcessManagementResponse) {
       apiResponses.processManagement = await fetchAppProcessSettings(
         kintoneClient,
@@ -28,7 +32,13 @@ export const syncSingleAppSettingToKintone = async (
       );
     }
 
-    // プロセス管理レスポンスフィールドのみ更新
+    if (config.commonSetting.getFormFieldsResponse) {
+      apiResponses.formFields = await fetchAppFormFields(kintoneClient, [
+        targetAppId,
+      ]);
+    }
+
+    // 設定に応じてレスポンスフィールドを更新
     const updateRecord: Record<string, { value: string }> = {};
 
     if (
@@ -40,6 +50,15 @@ export const syncSingleAppSettingToKintone = async (
       );
       updateRecord[config.commonSetting.getProcessManagementResponse] = {
         value: JSON.stringify(processSettings?.response || null),
+      };
+    }
+
+    if (apiResponses.formFields && config.commonSetting.getFormFieldsResponse) {
+      const formFieldsSettings = apiResponses.formFields.find(
+        (ff) => ff.appId === targetAppId,
+      );
+      updateRecord[config.commonSetting.getFormFieldsResponse] = {
+        value: JSON.stringify(formFieldsSettings?.response || null),
       };
     }
 
