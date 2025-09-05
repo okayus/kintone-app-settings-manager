@@ -41,7 +41,7 @@ import type {
         async () => {
           await syncSingleAppSettingToKintone(restApiClient, event, config);
         },
-        "プロセス管理設定を更新",
+        "アプリ設定を更新",
         headerSpace,
       );
 

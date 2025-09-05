@@ -8,6 +8,7 @@
 export type ID = string;
 export type NoName1 = string;
 export type NoName2 = string;
+export type NoName3 = string;
 
 export interface ConfigSchema {
   commonSetting: NoName;
@@ -16,4 +17,5 @@ export interface NoName {
   appId: ID;
   name: NoName1;
   getProcessManagementResponse?: NoName2;
+  getFormFieldsResponse?: NoName3;
 }

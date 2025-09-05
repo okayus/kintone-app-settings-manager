@@ -16,6 +16,10 @@
         "getProcessManagementResponse": {
           "type": "string",
           "title": "プロセス管理のレスポンスを保存する"
+        },
+        "getFormFieldsResponse": {
+          "type": "string",
+          "title": "フォームフィールドのレスポンスを保存する"
         }
       },
       "required": ["appId", "name"],

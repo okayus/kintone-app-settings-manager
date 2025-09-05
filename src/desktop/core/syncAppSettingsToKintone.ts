@@ -8,7 +8,8 @@ import type { KintoneEvent } from "src/shared/types/KintoneTypes";
  */
 export interface AppSettingsApiResponses {
   processManagement?: Awaited<ReturnType<typeof fetchAppProcessSettings>>;
-  // 将来追加予定: formFields, views, customize, etc.
+  formFields?: Awaited<ReturnType<typeof fetchAppFormFields>>;
+  // 将来追加予定: views, customize, etc.
 }
 
 /**
@@ -39,9 +40,13 @@ export const syncAppSettingsToKintone = async (
       );
     }
 
+    if (config.commonSetting.getFormFieldsResponse) {
+      apiResponses.formFields = await fetchAppFormFields(kintoneClient, appIds);
+    }
+
     // 将来的に追加される他のレスポンス取得処理
-    // if (config.commonSetting.getFormFieldsResponse) {
-    //   responses.formFields = await fetchFormFields(kintoneRestAPIClients, appIds);
+    // if (config.commonSetting.getViewsResponse) {
+    //   responses.views = await fetchViews(kintoneRestAPIClients, appIds);
     // }
 
     await kintoneClient.record.updateAllRecords({
@@ -80,8 +85,17 @@ const createFieldData = (
     };
   }
 
+  // フォームフィールドレスポンスの処理
+  if (apiResponses.formFields && config.commonSetting.getFormFieldsResponse) {
+    const formFieldsSettings = apiResponses.formFields.find(
+      (ff) => ff.appId === app.appId,
+    );
+    recordFields[config.commonSetting.getFormFieldsResponse] = {
+      value: JSON.stringify(formFieldsSettings?.response || null),
+    };
+  }
+
   // 将来的には他のレスポンス処理もここに追加
-  // if (responses.formFields && config.commonSetting.getFormFieldsResponse) { ... }
   // if (responses.views && config.commonSetting.getViewsResponse) { ... }
 
   return recordFields;
@@ -130,6 +144,31 @@ export const fetchAppProcessSettings = async (
   const responses = await Promise.all(
     appIds.map((appId) =>
       kintoneClient.app.getProcessManagement({ app: appId }).catch(() => null),
+    ),
+  );
+  return appIds.map((appId, index) => ({
+    appId,
+    response: responses[index],
+  }));
+};
+
+/**
+ * @description アプリIDの配列から、getFormFieldsのレスポンスの配列を取得し、IDとレスポンスを紐づけたオブジェクトの配列を返す純粋関数
+ */
+export const fetchAppFormFields = async (
+  kintoneClient: KintoneRestAPIClient,
+  appIds: string[],
+): Promise<
+  Array<{
+    appId: string;
+    response: Awaited<
+      ReturnType<KintoneRestAPIClient["app"]["getFormFields"]>
+    > | null;
+  }>
+> => {
+  const responses = await Promise.all(
+    appIds.map((appId) =>
+      kintoneClient.app.getFormFields({ app: appId }).catch(() => null),
     ),
   );
   return appIds.map((appId, index) => ({
