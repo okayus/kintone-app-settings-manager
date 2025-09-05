@@ -1,12 +1,18 @@
 import type { Record as KintoneRecord } from "@kintone/rest-api-client/lib/src/client/types";
 
-export type KintoneEvent = AppRecordIndexShowEvent;
+export type KintoneEvent = AppRecordIndexShowEvent | AppRecordDetailShowEvent;
 
 export type AppRecordIndexShowEvent = {
   appId: number;
   record: KintoneRecord;
   viewId: number;
   viewName: string;
+};
+
+export type AppRecordDetailShowEvent = {
+  appId: number;
+  record: KintoneRecord;
+  recordId: number;
 };
 
 /**

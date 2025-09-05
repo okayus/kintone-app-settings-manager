@@ -6,7 +6,7 @@ import type { KintoneEvent } from "src/shared/types/KintoneTypes";
 /**
  * @description kintone APIから取得した各レスポンスを管理するインターフェース
  */
-interface AppSettingsApiResponses {
+export interface AppSettingsApiResponses {
   processManagement?: Awaited<ReturnType<typeof fetchAppProcessSettings>>;
   // 将来追加予定: formFields, views, customize, etc.
 }
